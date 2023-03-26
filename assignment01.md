@@ -1,18 +1,18 @@
 # AI621 HW\#01
 
-% INITIALS (5 PTS)
-img = imread('./data/banana_slug.tiff');  
-img_size = size(img); 
-fprintf("### Initials (read images and get metadata)\n");
-fprintf("Datasize: %d %d\n", img_size(1), img_size(2));
-fprintf("Datatype before typecasting: %s\n", class(img));
-img = cast(img, 'double');
-fprintf("Datatype after typecasting: %s\n", class(img));
+## INITIALS (5 PTS)
+    img = imread('./data/banana_slug.tiff');  
+    img_size = size(img); 
+    fprintf("### Initials (read images and get metadata)\n");
+    fprintf("Datasize: %d %d\n", img_size(1), img_size(2));
+    fprintf("Datatype before typecasting: %s\n", class(img));
+    img = cast(img, 'double');
+    fprintf("Datatype after typecasting: %s\n", class(img));
 
-results
-Datasize: 2856 4290
-Datatype before typecasting: uint16
-Datatype after typecasting: double
+* results
+    Datasize: 2856 4290
+    Datatype before typecasting: uint16
+    Datatype after typecasting: double
 
 
 % LINEARIZATION (5 POINTS)
