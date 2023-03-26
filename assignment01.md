@@ -35,6 +35,7 @@
     fprintf("After linearization / Max: %f \t Min: %f\n", M, m);
 
 * results
+
 Before linearization / Max: 15303.000000 	 Min: 2002.000000
 
 After linearization / Max: 1.000000 	 Min: 0.000000
@@ -210,17 +211,30 @@ Coefficient : 2*Inverse(max)
 * results
 
 If Quality Factor = 90
+
 Gray JPEG : 2,017,602 bytes
+
 Gray PNG : 15,875,711 bytes
-Compression ratio : 12.7% 
-White JPEG : 2,026,468 bytes
-White PNG : 15,833,534 bytes
+
 Compression ratio : 12.7% 
 
-If Qality Factor = 50
-Gray JPEG : 721,798 bytes
-Gray PNG : 15,875,711 bytes
-Compression ratio : 4.55% 
-White JPEG : 724,142 bytes
+White JPEG : 2,026,468 bytes
+
 White PNG : 15,833,534 bytes
+
+Compression ratio : 12.7% 
+
+
+If Qality Factor = 50
+
+Gray JPEG : 721,798 bytes
+
+Gray PNG : 15,875,711 bytes
+
+Compression ratio : 4.55% 
+
+White JPEG : 724,142 bytes
+
+White PNG : 15,833,534 bytes
+
 Compression ratio : 4.57% 
