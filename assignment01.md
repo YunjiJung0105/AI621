@@ -10,6 +10,7 @@
     fprintf("Datatype after typecasting: %s\n", class(img));
 
 * results
+
     Datasize: 2856 4290
     Datatype before typecasting: uint16
     Datatype after typecasting: double
@@ -77,6 +78,7 @@ After linearization / Max: 1.000000 	 Min: 0.000000
     disp(tmp);
 
 * results
+
 <img width="1152" alt="image" src="https://user-images.githubusercontent.com/75105873/227754679-52ed5284-78e6-497b-883b-0b83e53c95f7.png">
 
 Verifying by inspecting the pixel values
@@ -118,6 +120,7 @@ Verifying by inspecting the pixel values
     subplot(1,2,2),imshow(min(img_gw, 1)),title('GrayWorld');
 
 * results
+
 <img width="1150" alt="image" src="https://user-images.githubusercontent.com/75105873/227754757-747ea69d-8b60-40ec-b6c1-f0c52bd1eeaf.png">
 
 
@@ -137,6 +140,7 @@ Verifying by inspecting the pixel values
     subplot(1,2,1),imshow(min(img_gray_dm, 1)),title('GrayDemosaicing');
 
 results
+
 <img width="1161" alt="image" src="https://user-images.githubusercontent.com/75105873/227754795-84a2a98d-38b3-4284-a4bf-9ffacaaaf30f.png">
 
 
@@ -182,6 +186,7 @@ results
     subplot(1,2,2),imshow(min(img_gray_dm, 1)),title('GrayGamma');
 
 * results
+
 Coefficient : 1*Inverse(max) 
 <img width="1162" alt="image" src="https://user-images.githubusercontent.com/75105873/227755262-a6e6908f-df39-4d93-adff-7a60417ff9d7.png">
 
@@ -200,6 +205,7 @@ Coefficient : 2*Inverse(max)
              
 
 * results
+
 If Quality Factor = 90
 Gray JPEG : 2,017,602 bytes
 Gray PNG : 15,875,711 bytes
