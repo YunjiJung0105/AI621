@@ -86,6 +86,7 @@ After linearization / Max: 1.000000 	 Min: 0.000000
 <img width="1152" alt="image" src="https://user-images.githubusercontent.com/75105873/227754679-52ed5284-78e6-497b-883b-0b83e53c95f7.png">
 
 Verifying by inspecting the pixel values
+
     0.0128    0.0260    0.0137    0.0309
     0.0272    0.0122    0.0317    0.0143
     0.0145    0.0294    0.0149    0.0327
