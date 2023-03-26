@@ -12,7 +12,9 @@
 * results
 
     Datasize: 2856 4290
+    
     Datatype before typecasting: uint16
+    
     Datatype after typecasting: double
 
 
@@ -34,6 +36,7 @@
 
 * results
 Before linearization / Max: 15303.000000 	 Min: 2002.000000
+
 After linearization / Max: 1.000000 	 Min: 0.000000
 
 
