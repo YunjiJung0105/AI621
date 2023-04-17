@@ -38,6 +38,9 @@
 
         face_YIQ = skimage.color.rgb2yiq(face_video)
 
+![baby_YIQ](https://user-images.githubusercontent.com/75105873/232422259-17bc0b78-1ae7-4b3a-a819-ca6a8c1a573f.png)
+![face_YIQ](https://user-images.githubusercontent.com/75105873/232422348-1fadbd23-4486-492c-aae4-07ed4941ef93.png)
+
 
 
 ## 2. LAPLACIAN PYRAMID
@@ -83,8 +86,20 @@
         face_laplacian = make_laplacian_vid(face_YIQ, pyramid_lv=4, name='face')
 
 
+![baby_laplacian_frame_level0](https://user-images.githubusercontent.com/75105873/232423057-6d3d44f6-9f93-4b4d-b792-4501146c363d.png)
+![baby_laplacian_frame_level1](https://user-images.githubusercontent.com/75105873/232423067-2fcbdac6-9401-4bd4-8154-7df0f0f1d050.png)
+![baby_laplacian_frame_level2](https://user-images.githubusercontent.com/75105873/232423078-cee02074-41ad-4bbd-bcc9-b4fedc9e92cf.png)
+![baby_laplacian_frame_level3](https://user-images.githubusercontent.com/75105873/232422642-96a8d0fa-d49d-4bed-8ece-140fbd8f3f24.png)
+
+![face_laplacian_frame_level0](https://user-images.githubusercontent.com/75105873/232423005-e3786d1e-d4ee-4af0-8552-d21833c369fa.png)
+![face_laplacian_frame_level1](https://user-images.githubusercontent.com/75105873/232423018-4b906da1-54da-4b40-818e-1c756e6220b6.png)
+![face_laplacian_frame_level2](https://user-images.githubusercontent.com/75105873/232423031-fd36dd9a-c060-41a9-8593-8642f53433b0.png)
+![face_laplacian_frame_level3](https://user-images.githubusercontent.com/75105873/232422678-d4dc28b1-024d-4c23-867b-742f3c7215ca.png)
+
+
+
 ## 3. TEMPORAL FILTERING & 4. EXTRACTING THE FREQUENCY BAND OF INTEREST
-* Make temporal ideal filter. I set the boundary after many trials.
+* Make temporal ideal filter. I set the boundary after many trials. I plotted the magnitude-frequency plot. (Up to 100 Frequencies)
 
         def temporal_ideal_filter(frames, pyramid_lv, low, high, fps, axis=0):
             out = []
@@ -115,6 +130,10 @@
 
         baby_temporal = temporal_ideal_filter(baby_laplacian, 4, 1, 30, 150)
         face_temporal = temporal_ideal_filter(face_laplacian, 4, 1, 30, 150)
+
+
+![baby_fft](https://user-images.githubusercontent.com/75105873/232423409-f0d62364-37bf-44c0-8033-e668377416b0.png)
+![face_fft](https://user-images.githubusercontent.com/75105873/232423456-e7e6c3ae-4445-4417-82eb-6e7fd6c2e577.png)
 
 
 ## 5. IMAGE RECONSTRUCTION
@@ -157,3 +176,5 @@
 
         save_video(baby_recon, 'baby_recon')
         save_video(face_recon, 'face_recon')
+        
+        
