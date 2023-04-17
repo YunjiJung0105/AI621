@@ -176,7 +176,8 @@
 
         save_video(baby_recon, 'baby_recon')
         save_video(face_recon, 'face_recon')
-        
+ 
+ * Below are the random frame of the reconstructed video.
 <img width="1178" alt="image" src="https://user-images.githubusercontent.com/75105873/232424698-5b701674-3cba-4489-87b2-7f1d42059e2b.png">
 <img width="577" alt="image" src="https://user-images.githubusercontent.com/75105873/232424806-3aa73985-40ac-4a92-985a-24c548c55afe.png">
 
