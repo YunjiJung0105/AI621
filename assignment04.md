@@ -1,5 +1,5 @@
 ## 1. LINEARIZE RENDERED IMAGES (25 POINTS)
-*
+* I implemented g function and least squares to linearize the rendered images. I plotted the g function for each weight scheme, uniform and tent.
 
     %% Least square
     logt = log(T);
@@ -131,7 +131,7 @@
 
 
 ## 2. MERGE EXPOSURE STACK INTO HDR IMAGE (15 POINTS)
-*
+* I implemented merging skills and merged the rendered images into 4 ways combining (uniform / tent) and (linear / log).
 
     MERGE = 'log';
 
@@ -215,7 +215,7 @@
 
 
 ## 3. EVALUATION (10 POINTS)
-*
+* Via color checker, I determined each patch position. Then, for the average luminance, I fitted linear regression and checked RMSE and R-squared values for each way. It is shown that RMSE is the smallest for uniform / linear and R-squared is the highest for uniform / log.
 
     patch = [375 62 387 73; 376 78 388 89; 376 93 388 105; 377 110 388 122; 377 125 389 138; 378 141 390 153;];
 
@@ -276,7 +276,7 @@ tent / linear : 0.9819
 tent / log :  0.9959
 
 ## 4. PHOTOGRAPHIC TONEMAPPING (20 POINTS)
-*
+* For tonemapping, I chose uniform / log img on the above because it has the highest R-squared and I think it is the best when I look at it. I applied photographic tonemapping in 2 ways : RGB and Luminance. I prefer applying the photographic tonemapping separately for each RGB channel because it looks more natural. 
 
     function [ I_c ] = photographic_tonemap_func( I, K, B, e )
     I_m = exp(mean(mean(log(I + e))));
@@ -338,7 +338,7 @@ K = 0.5 / B = 0.95
 
 
 ## 5. TONEMAPPING USING BILATERAL FILTERING (30 POINTS)
-*
+* I also chose uniform / log img image for tonemapping. I applied bilateral filtering tonemapping in 2 ways : RGB and Luminance. I prefer applying the bilateral filtering tonemapping separately for each RGB channel because the edges are more accurate. 
 
     function [ I_tmp ] = bilateral_tonemap_func(I, S, degree, sigma, e)
     L = log(I + e);
