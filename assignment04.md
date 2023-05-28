@@ -1,126 +1,126 @@
 ## 1. LINEARIZE RENDERED IMAGES (25 POINTS)
 * I implemented g function and least squares to linearize the rendered images. I plotted the g function for each weight scheme, uniform and tent.
 
-    %% Least square
-    logt = log(T);
+        %% Least square
+        logt = log(T);
 
-    [h, w, c, p] = size(img);
+        [h, w, c, p] = size(img);
 
-    patch = reshape(img, h*w, c, p);
-    disp(size(patch));
+        patch = reshape(img, h*w, c, p);
+        disp(size(patch));
 
-    z_max = 252;
-    z_min = 3;
-    z_mid = (z_max + z_min) * 0.5;
+        z_max = 252;
+        z_min = 3;
+        z_mid = (z_max + z_min) * 0.5;
 
-    WEIGHT = 'uniform';
-    weight_ = zeros(256,1);
+        WEIGHT = 'uniform';
+        weight_ = zeros(256,1);
 
-    if strcmp(WEIGHT, 'uniform')
-        weight_(:) = 1;
-    elseif strcmp(WEIGHT, 'tent')
-        for i = (z_min+1):(z_max+1)
-            if (i-1) > z_mid
-                weight_(i) = z_max - (i - 1);
-            else
-                weight_(i) = (i - 1) - z_min;
-            end
-        end
-    end
-
-    weight_ = double(weight_) / max(weight_);
-    weight_ = (weight_ + 0.01)*0.99;
-
-    [g, logE] = leastSquare(uint16(patch), logt, 10, weight_);
-
-    %% Normalize g
-    clearvars g_exp
-
-    g_ = g;
-    g_exp = exp(g_);
-
-    g_expmin = min(g_exp, [], 1);
-
-    for i = 1:3
-        g_exp(1:z_max-2, i) = g_exp(1:z_max-2, i) - g_expmin(i);
-    end
-
-    g_expmax = max(g_exp, [], 1);
-
-    for i = 1:3
-        g_exp(1:z_max-2, i) = g_exp(1:z_max-2, i)/g_expmax(i);
-    end
-
-    plot(g_exp);
-    
-    %% Linearization
-    clearvars I_lin reimg g_ref;
-    reimg = imresize(img_org, 0.2);
-    reimg(reimg>252)=252;
-    reimg(reimg<3)=3;
-    [rh, rw, rc, rp] = size(reimg);
-    I_lin = zeros(400, 600, 3, 16);
-
-    for p_=1:rp
-        for c_=1:rc
-            g_ref = g_exp(:, c);
-            for h_=1:rh
-                for w_=1:rw
-                    I_lin(h_, w_, c_, p_) = g_ref(uint8(reimg(h_, w_, c_, p_) -2));
+        if strcmp(WEIGHT, 'uniform')
+            weight_(:) = 1;
+        elseif strcmp(WEIGHT, 'tent')
+            for i = (z_min+1):(z_max+1)
+                if (i-1) > z_mid
+                    weight_(i) = z_max - (i - 1);
+                else
+                    weight_(i) = (i - 1) - z_min;
                 end
             end
         end
-    end
-    
-    
-    function [g, logE] = leastSquare(img, logt, lambda, weight)
-    [N, c, p] = size(img);
-    disp(size(img));
-    z_max = 252;
-    z_min = 3;
-    z_range = z_max - z_min + 1;
 
-    disp('Alloc matrix');
-    A = spalloc(N*p+z_range+1, z_range+N, N*p*2 + z_range*3);
-    b = zeros(size(A, 1), 1);
+        weight_ = double(weight_) / max(weight_);
+        weight_ = (weight_ + 0.01)*0.99;
 
-    for c_=1:c
-        tic
-        disp('Construct A and b');
-        disp(c_);
-        k_ = 1;
-        for i=1:N
-            for j=1:p
-                intensity = img(i, c_, j);
-                wght = weight(intensity + 1);
-                A(k_, intensity + 1) = wght;
-                A(k_, i+z_range) = -wght;
-                b(k_, 1) = wght * logt(j);
-                k_ = k_ + 1;
+        [g, logE] = leastSquare(uint16(patch), logt, 10, weight_);
+
+        %% Normalize g
+        clearvars g_exp
+
+        g_ = g;
+        g_exp = exp(g_);
+
+        g_expmin = min(g_exp, [], 1);
+
+        for i = 1:3
+            g_exp(1:z_max-2, i) = g_exp(1:z_max-2, i) - g_expmin(i);
+        end
+
+        g_expmax = max(g_exp, [], 1);
+
+        for i = 1:3
+            g_exp(1:z_max-2, i) = g_exp(1:z_max-2, i)/g_expmax(i);
+        end
+
+        plot(g_exp);
+
+        %% Linearization
+        clearvars I_lin reimg g_ref;
+        reimg = imresize(img_org, 0.2);
+        reimg(reimg>252)=252;
+        reimg(reimg<3)=3;
+        [rh, rw, rc, rp] = size(reimg);
+        I_lin = zeros(400, 600, 3, 16);
+
+        for p_=1:rp
+            for c_=1:rc
+                g_ref = g_exp(:, c);
+                for h_=1:rh
+                    for w_=1:rw
+                        I_lin(h_, w_, c_, p_) = g_ref(uint8(reimg(h_, w_, c_, p_) -2));
+                    end
+                end
             end
         end
 
-        A(k_, z_max) = 1;
 
-        k_ = k_ + 1;
+        function [g, logE] = leastSquare(img, logt, lambda, weight)
+        [N, c, p] = size(img);
+        disp(size(img));
+        z_max = 252;
+        z_min = 3;
+        z_range = z_max - z_min + 1;
 
-        for i_=1:(z_max-2)
-            A(k_, i_) = lambda * weight(i_+1);
-            A(k_, i_+1) = -2*lambda * weight(i_+1);
-            A(k_, i_+2) = lambda * weight(i_+1);
+        disp('Alloc matrix');
+        A = spalloc(N*p+z_range+1, z_range+N, N*p*2 + z_range*3);
+        b = zeros(size(A, 1), 1);
+
+        for c_=1:c
+            tic
+            disp('Construct A and b');
+            disp(c_);
+            k_ = 1;
+            for i=1:N
+                for j=1:p
+                    intensity = img(i, c_, j);
+                    wght = weight(intensity + 1);
+                    A(k_, intensity + 1) = wght;
+                    A(k_, i+z_range) = -wght;
+                    b(k_, 1) = wght * logt(j);
+                    k_ = k_ + 1;
+                end
+            end
+
+            A(k_, z_max) = 1;
+
             k_ = k_ + 1;
-        end
-        toc
 
-        tic
-        disp('Find pseudo inverse');
-        tmp = A\b;
-        disp(size(tmp));
-        g(:, c_) = tmp(1:z_range);
-        logE(:, c_) = tmp(z_range+1:size(tmp,1));
-        toc
-    end
-    end
+            for i_=1:(z_max-2)
+                A(k_, i_) = lambda * weight(i_+1);
+                A(k_, i_+1) = -2*lambda * weight(i_+1);
+                A(k_, i_+2) = lambda * weight(i_+1);
+                k_ = k_ + 1;
+            end
+            toc
+
+            tic
+            disp('Find pseudo inverse');
+            tmp = A\b;
+            disp(size(tmp));
+            g(:, c_) = tmp(1:z_range);
+            logE(:, c_) = tmp(z_range+1:size(tmp,1));
+            toc
+        end
+        end
 
 
 * Uniform plot
@@ -133,72 +133,72 @@
 ## 2. MERGE EXPOSURE STACK INTO HDR IMAGE (15 POINTS)
 * I implemented merging skills and merged the rendered images into 4 ways combining (uniform / tent) and (linear / log).
 
-    MERGE = 'log';
+        MERGE = 'log';
 
-    linmin = min(I_lin,[], [1,2,4]);
-    linmax = max(I_lin,[], [1,2,4]);
+        linmin = min(I_lin,[], [1,2,4]);
+        linmax = max(I_lin,[], [1,2,4]);
 
-    for i = 1:3
-        tmptttt(:, :, i, :) = I_lin(:, :, i, :) - linmin(i);
-        tmptttt(:, :, i, :) = double(I_lin(:, :, i, :))/double(linmax(i));
-    end
+        for i = 1:3
+            tmptttt(:, :, i, :) = I_lin(:, :, i, :) - linmin(i);
+            tmptttt(:, :, i, :) = double(I_lin(:, :, i, :))/double(linmax(i));
+        end
 
-    tmptttt = uint8(round(tmptttt*252));
+        tmptttt = uint8(round(tmptttt*252));
 
-    doubleimg = double(reimg)/252.0;
-    I_HDR = merge(tmptttt, doubleimg, weight_, T, MERGE);
+        doubleimg = double(reimg)/252.0;
+        I_HDR = merge(tmptttt, doubleimg, weight_, T, MERGE);
 
-    hdrwrite(I_HDR, 'HDRFILE.hdr');
-    HDRFILE = hdrread('HDRFILE.hdr');
+        hdrwrite(I_HDR, 'HDRFILE.hdr');
+        HDRFILE = hdrread('HDRFILE.hdr');
 
-    rgb = tonemap(HDRFILE);
-    rrr=rgb(:, :, 1);
-    ggg=rgb(:, :, 2);
-    bbb=rgb(:, :, 3);
+        rgb = tonemap(HDRFILE);
+        rrr=rgb(:, :, 1);
+        ggg=rgb(:, :, 2);
+        bbb=rgb(:, :, 3);
 
-    figure;
-    subplot(4,1,1),imshow(rrr, []);
-    subplot(4,1,2),imshow(ggg, []);
-    subplot(4,1,3),imshow(bbb, []);
-    subplot(4,1,4),imshow(rgb);
-    
-    
-    function HDR = merge(img_lin, img_org, weight, T, MERGE)
+        figure;
+        subplot(4,1,1),imshow(rrr, []);
+        subplot(4,1,2),imshow(ggg, []);
+        subplot(4,1,3),imshow(bbb, []);
+        subplot(4,1,4),imshow(rgb);
 
-    [h, w, c, p] = size(img_lin);
 
-    HDR = zeros(h, w, c);
+        function HDR = merge(img_lin, img_org, weight, T, MERGE)
 
-    numer = zeros(h,w,c);
-    denom = zeros(h,w,c);
+        [h, w, c, p] = size(img_lin);
 
-    for p_=1:p
-        for c_=1:c
-            for h_=1:h
-                for w_=1:w
-                    tmp_lin = img_lin(h_, w_, c_, p_);
-                    tmp_org = img_org(h_, w_, c_, p_);
-                    if strcmp(MERGE, 'linear')
-                        numer(h_, w_, c_) = numer(h_, w_, c_) + weight(tmp_lin + 1) * tmp_org / T(p_); 
-                    else
-                        numer(h_, w_, c_) = numer(h_, w_, c_) + weight(tmp_lin + 1) * (log(double(tmp_org)) - log(T(p_))); 
+        HDR = zeros(h, w, c);
+
+        numer = zeros(h,w,c);
+        denom = zeros(h,w,c);
+
+        for p_=1:p
+            for c_=1:c
+                for h_=1:h
+                    for w_=1:w
+                        tmp_lin = img_lin(h_, w_, c_, p_);
+                        tmp_org = img_org(h_, w_, c_, p_);
+                        if strcmp(MERGE, 'linear')
+                            numer(h_, w_, c_) = numer(h_, w_, c_) + weight(tmp_lin + 1) * tmp_org / T(p_); 
+                        else
+                            numer(h_, w_, c_) = numer(h_, w_, c_) + weight(tmp_lin + 1) * (log(double(tmp_org)) - log(T(p_))); 
+                        end
+                        denom(h_, w_, c_) = denom(h_, w_, c_) + weight(tmp_lin + 1);   
                     end
-                    denom(h_, w_, c_) = denom(h_, w_, c_) + weight(tmp_lin + 1);   
                 end
             end
+            if denom(h_, w_, c_)==0
+                numer(h_, w_, c_)=1;
+                denom(h_, w_, c_)=1;
+            end
         end
-        if denom(h_, w_, c_)==0
-            numer(h_, w_, c_)=1;
-            denom(h_, w_, c_)=1;
-        end
-    end
 
-    if strcmp(MERGE, 'linear')
-        HDR = numer./denom; 
-    else
-        HDR = exp(numer./denom);  
-    end
-    end
+        if strcmp(MERGE, 'linear')
+            HDR = numer./denom; 
+        else
+            HDR = exp(numer./denom);  
+        end
+        end
 
 
 * Uniform / Linear
@@ -217,40 +217,40 @@
 ## 3. EVALUATION (10 POINTS)
 * Via color checker, I determined each patch position. Then, for the average luminance, I fitted linear regression and checked RMSE and R-squared values for each way. It is shown that RMSE is the smallest for uniform / linear and R-squared is the highest for uniform / log.
 
-    patch = [375 62 387 73; 376 78 388 89; 376 93 388 105; 377 110 388 122; 377 125 389 138; 378 141 390 153;];
+        patch = [375 62 387 73; 376 78 388 89; 376 93 388 105; 377 110 388 122; 377 125 389 138; 378 141 390 153;];
 
-    figure;
-    idx = 1;
-    weights = {'uniform', 'tent'};
-    merges = {'linear', 'log'};
+        figure;
+        idx = 1;
+        weights = {'uniform', 'tent'};
+        merges = {'linear', 'log'};
 
-    for weight_num = 1:2
-        for merge_num = 1:2
-            hdr_path = sprintf('%s_%s.hdr', weights{weight_num}, merges{merge_num});
-            img = hdrread(hdr_path);
-            img_XYZ = rgb2xyz(img, 'Colorspace', 'linear-rgb');
+        for weight_num = 1:2
+            for merge_num = 1:2
+                hdr_path = sprintf('%s_%s.hdr', weights{weight_num}, merges{merge_num});
+                img = hdrread(hdr_path);
+                img_XYZ = rgb2xyz(img, 'Colorspace', 'linear-rgb');
 
-            Lum = img_XYZ(:,:,2);
+                Lum = img_XYZ(:,:,2);
 
-            x = zeros(6, 1);
-            y = zeros(6, 1);
+                x = zeros(6, 1);
+                y = zeros(6, 1);
 
-            for i = 1:6  
-                x(i) = i;
-                y(i) = log(mean(mean(Lum(patch(i,2):patch(i,4), patch(i,1):patch(i,3)))));
+                for i = 1:6  
+                    x(i) = i;
+                    y(i) = log(mean(mean(Lum(patch(i,2):patch(i,4), patch(i,1):patch(i,3)))));
+                end
+
+                fit = fitlm(x, y);
+                fit.RMSE
+                fit.Rsquared
+
+                subplot(4,1,idx);
+                plot(fit)
+                title(sprintf('%s_%s', weights{weight_num}, merges{merge_num}))
+
+                idx = idx+1;
             end
-
-            fit = fitlm(x, y);
-            fit.RMSE
-            fit.Rsquared
-
-            subplot(4,1,idx);
-            plot(fit)
-            title(sprintf('%s_%s', weights{weight_num}, merges{merge_num}))
-
-            idx = idx+1;
         end
-    end
 
 * Results
 ![eval](https://github.com/yoonjiJung/AI621/assets/75105873/e80c0cbd-3bbd-4a1b-ae1a-ffccbcd5bb54)
@@ -276,49 +276,49 @@ tent / linear : 0.9819
 tent / log :  0.9959
 
 ## 4. PHOTOGRAPHIC TONEMAPPING (20 POINTS)
-* For tonemapping, I chose uniform / log img on the above because it has the highest R-squared and I think it is the best when I look at it. I applied photographic tonemapping in 2 ways : RGB and Luminance. I prefer applying the photographic tonemapping separately for each RGB channel because it looks more natural. 
+* For tonemapping, I chose uniform / log img on the above because it has the highest R-squared and I think it is the best when I look at it. I applied photographic tonemapping in 2 ways : RGB and Luminance. I changed parameters. I prefer applying the photographic tonemapping separately for each RGB channel because it looks more natural. 
 
-    function [ I_c ] = photographic_tonemap_func( I, K, B, e )
-    I_m = exp(mean(mean(log(I + e))));
-    I_ = (K / I_m) * I;
-    I_white = B * max(max(I_));
-    I_c = I_ .* (1 + I_ / (I_white * I_white)) ./ (1 + I_);
-    end
-
-    function [ output ] = photographic_tonemapping( img, K, B, colorSpace )
-    N = size(img, 1) * size(img, 2);
-    e = 1e-6;
-    [h, w, c] = size(img);
-
-    if strcmp(colorSpace, 'rgb')
-        output = zeros(h, w, c);
-
-        for c = 1:c
-            I = img(:,:,c);
-            I_c = photographic_tonemap_func(I, K, B, e);
-            output(:,:,c) = I_c;
+        function [ I_c ] = photographic_tonemap_func( I, K, B, e )
+        I_m = exp(mean(mean(log(I + e))));
+        I_ = (K / I_m) * I;
+        I_white = B * max(max(I_));
+        I_c = I_ .* (1 + I_ / (I_white * I_white)) ./ (1 + I_);
         end
 
-    else
-        img_xyz = rgb2xyz(img, 'Colorspace', 'linear-rgb');
-        X = img_xyz(:,:,1);
-        Y = img_xyz(:,:,2);
-        Z = img_xyz(:,:,3);
+        function [ output ] = photographic_tonemapping( img, K, B, colorSpace )
+        N = size(img, 1) * size(img, 2);
+        e = 1e-6;
+        [h, w, c] = size(img);
 
-        x = X ./ (X + Y + Z);
-        y = Y ./ (X + Y + Z);
+        if strcmp(colorSpace, 'rgb')
+            output = zeros(h, w, c);
 
-        I_c = photographic_tonemap_func(Y, K, B, e);
-        [X, Y, Z] = xyY_to_XYZ(x, y, I_c);
+            for c = 1:c
+                I = img(:,:,c);
+                I_c = photographic_tonemap_func(I, K, B, e);
+                output(:,:,c) = I_c;
+            end
 
-        img_xyz_ = zeros(h, w, c);
-        img_xyz_(:,:,1) = X;
-        img_xyz_(:,:,2) = Y;
-        img_xyz_(:,:,3) = Z;
+        else
+            img_xyz = rgb2xyz(img, 'Colorspace', 'linear-rgb');
+            X = img_xyz(:,:,1);
+            Y = img_xyz(:,:,2);
+            Z = img_xyz(:,:,3);
 
-        output = xyz2rgb(img_xyz_);
-    end
-    end
+            x = X ./ (X + Y + Z);
+            y = Y ./ (X + Y + Z);
+
+            I_c = photographic_tonemap_func(Y, K, B, e);
+            [X, Y, Z] = xyY_to_XYZ(x, y, I_c);
+
+            img_xyz_ = zeros(h, w, c);
+            img_xyz_(:,:,1) = X;
+            img_xyz_(:,:,2) = Y;
+            img_xyz_(:,:,3) = Z;
+
+            output = xyz2rgb(img_xyz_);
+        end
+        end
 
 * RGB 
 
@@ -338,56 +338,56 @@ K = 0.5 / B = 0.95
 
 
 ## 5. TONEMAPPING USING BILATERAL FILTERING (30 POINTS)
-* I also chose uniform / log img image for tonemapping. I applied bilateral filtering tonemapping in 2 ways : RGB and Luminance. I prefer applying the bilateral filtering tonemapping separately for each RGB channel because the edges are more accurate. 
+* I also chose uniform / log img image for tonemapping. I applied bilateral filtering tonemapping in 2 ways : RGB and Luminance. I changed parameters, but there was no big difference. I prefer applying the bilateral filtering tonemapping separately for each RGB channel because the edges are more accurate. 
 
-    function [ I_tmp ] = bilateral_tonemap_func(I, S, degree, sigma, e)
-    L = log(I + e);
-    L_min = min(min(L));
-    L_max = max(max(L));
+        function [ I_tmp ] = bilateral_tonemap_func(I, S, degree, sigma, e)
+        L = log(I + e);
+        L_min = min(min(L));
+        L_max = max(max(L));
 
-    L_temp = (L - L_min) / (L_max - L_min);
-    B_temp = imbilatfilt(L_temp, degree, sigma);
-    B = B_temp * (L_max - L_min) + L_min;
-    D = L - B;
-    B_new = S * (B - max(max(B)));
-    I_tmp = exp(B_new + D);
-    end
-
-
-    function [ output ] = bilateral_tonemapping( img, degree, S, sigma, colorSpace )
-    N = size(img, 1) * size(img, 2);
-    e = 1e-6;
-    [h, w, c] = size(img);
-
-    if strcmp(colorSpace, 'rgb')
-        output = zeros(h, w, c);
-
-        for c = 1:c
-            I_tmp = bilateral_tonemap_func(img(:,:,c), S, degree, sigma, e);
-            output(:,:,c) = I_tmp;
+        L_temp = (L - L_min) / (L_max - L_min);
+        B_temp = imbilatfilt(L_temp, degree, sigma);
+        B = B_temp * (L_max - L_min) + L_min;
+        D = L - B;
+        B_new = S * (B - max(max(B)));
+        I_tmp = exp(B_new + D);
         end
 
-    else
-        img_xyz = rgb2xyz(img, 'Colorspace', 'linear-rgb');
 
-        X = img_xyz(:,:,1);
-        Y = img_xyz(:,:,2);
-        Z = img_xyz(:,:,3);
+        function [ output ] = bilateral_tonemapping( img, degree, S, sigma, colorSpace )
+        N = size(img, 1) * size(img, 2);
+        e = 1e-6;
+        [h, w, c] = size(img);
 
-        x = X ./ (X + Y + Z);
-        y = Y ./ (X + Y + Z);
+        if strcmp(colorSpace, 'rgb')
+            output = zeros(h, w, c);
 
-        I_tmp = bilateral_tonemap_func(Y, S, degree, sigma, e);        
-        [X, Y, Z] = xyY_to_XYZ(x, y, I_tmp);
+            for c = 1:c
+                I_tmp = bilateral_tonemap_func(img(:,:,c), S, degree, sigma, e);
+                output(:,:,c) = I_tmp;
+            end
 
-        img_xyz_ = zeros(h, w, c);
-        img_xyz_(:,:,1) = X;
-        img_xyz_(:,:,2) = Y;
-        img_xyz_(:,:,3) = Z;
+        else
+            img_xyz = rgb2xyz(img, 'Colorspace', 'linear-rgb');
 
-        output = xyz2rgb(img_xyz_);
-    end
-    end
+            X = img_xyz(:,:,1);
+            Y = img_xyz(:,:,2);
+            Z = img_xyz(:,:,3);
+
+            x = X ./ (X + Y + Z);
+            y = Y ./ (X + Y + Z);
+
+            I_tmp = bilateral_tonemap_func(Y, S, degree, sigma, e);        
+            [X, Y, Z] = xyY_to_XYZ(x, y, I_tmp);
+
+            img_xyz_ = zeros(h, w, c);
+            img_xyz_(:,:,1) = X;
+            img_xyz_(:,:,2) = Y;
+            img_xyz_(:,:,3) = Z;
+
+            output = xyz2rgb(img_xyz_);
+        end
+        end
 
 * RGB - degree = 50 / sigma = 7
 ![bilateral_degree50_sigma7](https://github.com/yoonjiJung/AI621/assets/75105873/46705917-ebde-4c3d-922b-3a5452e3f6bf)
