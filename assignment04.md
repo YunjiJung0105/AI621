@@ -1,3 +1,5 @@
+* dcraw does not work, so I used only rendered images.
+
 ## 1. LINEARIZE RENDERED IMAGES (25 POINTS)
 * I implemented g function and least squares to linearize the rendered images. I plotted the g function for each weight scheme, uniform and tent.
 
