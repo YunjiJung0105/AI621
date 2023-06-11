@@ -8,6 +8,8 @@
     C = 3;
 
     img_arr = zeros(U, V, S, T, C);
+    
+    
 ## Sub-aperture views (20 points).
     for s = 1:S
         for t = 1:T
@@ -66,28 +68,37 @@
     end
 
 * Result
+
 d = 0
+
 ![refocused_d_0](https://github.com/yoonjiJung/AI621/assets/75105873/0d04cf62-361c-4318-8449-cdd03767d853)
 
 d = 0.2
+
 ![refocused_d_0 2](https://github.com/yoonjiJung/AI621/assets/75105873/5c8ebbd4-b551-4f76-b99b-2870d3902b6f)
 
 d = 0.4
+
 ![refocused_d_0 4](https://github.com/yoonjiJung/AI621/assets/75105873/83abc28c-23e5-45da-a196-65755f1ca11e)
 
 d = 0.6
+
 ![refocused_d_0 6](https://github.com/yoonjiJung/AI621/assets/75105873/ecb609a1-fd44-45a4-b419-6f830d8c0927)
 
 d = 0.8
+
 ![refocused_d_0 8](https://github.com/yoonjiJung/AI621/assets/75105873/82af5f5c-3a0e-42ea-8b4e-41ebf52710c9)
 
 d = 1.0
+
 ![refocused_d_1](https://github.com/yoonjiJung/AI621/assets/75105873/6c278762-386c-4866-bd6b-f008b5a524d4)
 
 d = 1.2
+
 ![refocused_d_1 2](https://github.com/yoonjiJung/AI621/assets/75105873/8d56c60d-4d7f-4355-86b9-52c274010078)
 
 d = 1.4
+
 ![refocused_d_1 4](https://github.com/yoonjiJung/AI621/assets/75105873/c211ddc5-24c1-4306-a6ed-5b675ed12c35)
 
 
@@ -121,22 +132,27 @@ d = 1.4
     end
 
 * Result
+
 sigma_1 = 0.5 / sigma_2 = 0.5
+
 ![all_focus_0 5_0 5](https://github.com/yoonjiJung/AI621/assets/75105873/8076a1da-02f5-4540-bcae-fa96cd1f7bbc)
 
 ![depth_0 5_0 5](https://github.com/yoonjiJung/AI621/assets/75105873/ae6cdd55-80c8-4773-b200-e8e83f2037f2)
 
 sigma_1 = 1 / sigma_2 = 1
+
 ![all_focus_1_1](https://github.com/yoonjiJung/AI621/assets/75105873/d11da0da-9cb8-418a-a548-936d35c21aa8)
 
 ![depth_1_1](https://github.com/yoonjiJung/AI621/assets/75105873/2076cc67-2245-4110-9fcb-e11095209363)
 
 sigma_1 = 1 / sigma_2 = 2
+
 ![all_focus_1_2](https://github.com/yoonjiJung/AI621/assets/75105873/cb71b525-c87a-4e26-87cb-8f16b3409017)
 
 ![depth_1_2](https://github.com/yoonjiJung/AI621/assets/75105873/29a1478f-9b2e-4564-be01-05036fd5a74b)
 
 sigma_1 = 2 / sigma_2 = 2
+
 ![all_focus_2_2](https://github.com/yoonjiJung/AI621/assets/75105873/86fa16c0-f766-4e14-9c00-4c530cd94139)
 
 ![depth_2_2](https://github.com/yoonjiJung/AI621/assets/75105873/f092ec7a-3ee0-4401-9885-38857a69c7b8)
