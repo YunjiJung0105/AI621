@@ -1,4 +1,6 @@
 ## Initials (5 points).
+* I loaded the light field image in Matlab, and create from it a 5-dimensional array using zeros function.
+
     img = imread('data/chessboard_lightfield.png');
 
     lenslet = 16;
@@ -11,6 +13,8 @@
     
     
 ## Sub-aperture views (20 points).
+* I rearranged the pixels in the light field image by slicing the original image and then saving at 'img_arr'. I again sliced img_arr and saved it in 'img_mosaic'.
+ 
     for s = 1:S
         for t = 1:T
             img_arr(:, :, s, t, :) = img((s-1)*lenslet+1:s*lenslet, (t-1)*lenslet+1:t*lenslet, :);
@@ -32,6 +36,8 @@
 
 
 ## Refocusing and focal-stack generation (40 points).
+* I varied d from 0 to 1.4 with interval 0.2. 
+
     maxUV = (lenslet - 1) / 2;
     refocused_u = (1:U) - 1 - maxUV;
     refocused_v = (1:V) - 1 - maxUV;
@@ -103,6 +109,8 @@ d = 1.4
 
 
 ## All-focus image and depth from defocus (35 points).
+* I merged the images created above into a new images where all of the scene is in focus. In the process of doing so, I also obtained depth estimates for each part of the scene. I experimented with various sigma_1 and sigma_2. Among the results, I think the image with sigma_1 = sigma_2 = 0.5 and sigma_1 = sigma_2 = 1 are the best as they show clear objects.
+
     sigma_1 = [0.5,1,1,2,4,6];
     sigma_2 = [0.5,1,2,2,4,6];
 
@@ -158,9 +166,12 @@ sigma_1 = 2 / sigma_2 = 2
 ![depth_2_2](https://github.com/yoonjiJung/AI621/assets/75105873/f092ec7a-3ee0-4401-9885-38857a69c7b8)
 
 sigma_1 = 4 / sigma_2 = 4
+
 ![all_focus_4_4](https://github.com/yoonjiJung/AI621/assets/75105873/5b12e65e-66f8-4581-a53e-5195a6ef26f5)
 
 ![depth_4_4](https://github.com/yoonjiJung/AI621/assets/75105873/fa2de9a2-ef46-49bc-befe-c22848265dee)
+
+sigma_1 = 6 / sigma_2 = 6
 
 ![all_focus_6_6](https://github.com/yoonjiJung/AI621/assets/75105873/89057c52-278a-430b-91ca-78f1c318656d)
 
